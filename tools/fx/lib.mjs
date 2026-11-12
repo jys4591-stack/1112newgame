@@ -19,12 +19,18 @@ export function git(args, cwd = VENDOR) {
   return execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 }
 
+/** Patch Pixel 폰트(gallery/fonts)는 쓰지 않는다: 디스크에 내려받지도 않는다. (THIRD_PARTY_NOTICES.md 참고) */
+function excludeFonts() {
+  git(["sparse-checkout", "set", "--no-cone", "/*", "!/gallery/fonts/"]);
+}
+
 /** 고정된 커밋으로 vendor/pixelfx 를 맞춘다. 이미 맞으면 아무것도 안 한다. */
 export function ensureInstalled({ quiet = false } = {}) {
   const log = (m) => { if (!quiet) console.log(m); };
   if (existsSync(join(VENDOR, ".git"))) {
     try {
       if (git(["rev-parse", "HEAD"]) === lock.commit) {
+        excludeFonts();
         log(`pixelfx ${lock.version} (${lock.commit.slice(0, 7)}) 확인됨`);
         return;
       }
@@ -35,6 +41,7 @@ export function ensureInstalled({ quiet = false } = {}) {
     git(["remote", "add", "origin", lock.repo]);
   }
   log(`pixelfx ${lock.version} (${lock.commit.slice(0, 7)}) 받는 중...`);
+  excludeFonts();
   git(["fetch", "--depth", "1", "origin", lock.commit]);
   git(["-c", "advice.detachedHead=false", "checkout", "-q", "--force", lock.commit]);
   const got = JSON.parse(readFileSync(join(VENDOR, "package.json"), "utf8")).version;
