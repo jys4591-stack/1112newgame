@@ -1,0 +1,14 @@
+{
+  "name": "1112newgame",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "fx": "node tools/fx/cli.mjs",
+    "fx:setup": "node tools/fx/cli.mjs setup",
+    "fx:search": "node tools/fx/cli.mjs search",
+    "fx:preview": "node tools/fx/cli.mjs preview",
+    "fx:sheet": "node tools/fx/cli.mjs sheet",
+    "fx:import": "node tools/fx/cli.mjs import"
+  }
+}
